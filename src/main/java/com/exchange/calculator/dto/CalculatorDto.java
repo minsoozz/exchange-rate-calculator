@@ -1,10 +1,11 @@
 package com.exchange.calculator.dto;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CalculatorDto {
   private boolean success;
-  private Quote quotes;
+  private Map<String,Double> quotes = new HashMap<>();
 
   public boolean isSuccess() {
     return success;
@@ -14,11 +15,19 @@ public class CalculatorDto {
     this.success = success;
   }
 
-  public Quote getQuotes() {
+  public Map<String, Double> getQuotes() {
     return quotes;
   }
 
-  public void setQuotes(Quote quotes) {
+  public void setQuotes(Map<String, Double> quotes) {
     this.quotes = quotes;
+  }
+
+  @Override
+  public String toString() {
+    return "CalculatorDto{" +
+        "success=" + success +
+        ", quote=" + quotes +
+        '}';
   }
 }
