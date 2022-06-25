@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <meta charset="UTF-8">
     <title>환율 계산</title>
 </head>
@@ -21,10 +22,18 @@
         </td>
         <td>
             <select id="select-box">
-                <option>한국(KRW)</option>
-                <option>일본(JPY)</option>
-                <option>필리핀(PHP)</option>
+                <option value="KOREA" data-initials="KRW">한국(KRW)</option>
+                <option value="JAPAN" data-initials="JPY">일본(JPY)</option>
+                <option value="PHILIPPINE" data-initials="PHP">필리핀(PHP)</option>
             </select>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            환율 :
+        </td>
+        <td>
+            <span id="exchange_rate"></span>
         </td>
     </tr>
     <tr>
@@ -40,6 +49,55 @@
             <button type="button" id="button">Submit</button>
         </td>
     </tr>
+    <tr>
+        <td colspan="2">
+            <span id="result"></span>
+        </td>
+    </tr>
 </table>
 </body>
+<script>
+    $(window).load(function () {
+        getExchangeRateByCountry();
+    })
+
+    $(document).on("click", "#button", function () {
+        if (valid()) {
+            alert("송금액이 바르지 않습니다");
+            return false;
+        }
+        $.ajax({
+            type:'GET',
+            url:'./api/calculators/exchange?exchangeRate='+ $("#exchange_rate").text() + '&remittanceAmount=' + $("#input").val(),
+            success: function(response){
+                $("#result").text("수취 금액은 " + response + " " + $("#select-box option:selected").data('initials') + " 입니다.")
+            }, error:function(){
+                alert("오류가 발생하였습니다");
+            }
+        })
+    })
+
+    $(document).on("change", "#select-box", function () {
+        getExchangeRateByCountry();
+    })
+
+    function getExchangeRateByCountry() {
+        const country = $("#select-box option:selected").val()
+        $.ajax({
+            type: "GET",
+            url: './api/calculators?country=' + country,
+            success: function (response) {
+                $("#exchange_rate").text(response);
+            }, error: function () {
+                alert("오류가 발생하였습니다");
+            }
+        })
+    }
+
+    function valid() {
+        const input = $("#input").val();
+        return (input < 1 || 10000000000 < input || input === "");
+    }
+
+</script>
 </html>
